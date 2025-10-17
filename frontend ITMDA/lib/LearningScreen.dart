@@ -12,10 +12,10 @@ class MyApp extends StatelessWidget {
       home: LearningScreen(),
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.transparent, // Allow gradient background
-        cardColor: Color(0xFF16213E), // Card background color (adjusted for contrast)
+        cardColor: AppColors.Yankees_Blue, // Card background color (adjusted for contrast)
         textTheme: TextTheme(
-          bodyLarge: TextStyle(color: Color(0xFFFFFFFF)), // White text
-          bodyMedium: TextStyle(color: Color(0xFFB3FFFFFF)), // White at 70% opacity
+          bodyLarge: const TextStyle(color: AppColors.textPrimary), // White text
+          bodyMedium: const TextStyle(color: AppColors.textSecondary), // White at 70% opacity
         ),
       ),
     );
@@ -79,13 +79,13 @@ class _LearningScreenState extends State<LearningScreen> {
       title: 'AI Code Generation Basics',
       subtitle: '12 lessons + 2h 30min',
       progress: 0.75,
-      iconColor: Color(0xFF7851A9), // Royal Purple
+      iconColor: AppColors.Royal_Purple,
     ),
     Course(
       title: 'Debugging with AI Tools',
       subtitle: '8 lessons + 1h 45min',
       progress: 0.40,
-      iconColor: Color(0xFF6495ED), // Cornflower Blue
+      iconColor: AppColors.Cornflower_Blue,
     ),
   ];
 
@@ -93,12 +93,12 @@ class _LearningScreenState extends State<LearningScreen> {
     LearningPath(
       title: 'Beginner',
       lessons: '15 lessons',
-      iconColor: Color(0xFF6495ED), // Cornflower Blue
+      iconColor: AppColors.Cornflower_Blue,
     ),
     LearningPath(
       title: 'Intermediate',
       lessons: '24 lessons',
-      iconColor: Color(0xFF7851A9), // Royal Purple
+      iconColor: AppColors.Royal_Purple,
     ),
   ];
 
@@ -106,27 +106,27 @@ class _LearningScreenState extends State<LearningScreen> {
     Achievement(
       title: 'First Code',
       icon: Icons.code,
-      iconColor: Color(0xFF6495ED), // Cornflower Blue
+      iconColor: AppColors.Cornflower_Blue,
       unlockCondition: 'Complete any course',
       isUnlocked: true,
     ),
     Achievement(
       title: 'Completed 5 Lessons',
       icon: Icons.star,
-      iconColor: Color(0xFF7851A9), // Royal Purple
+      iconColor: AppColors.Royal_Purple,
       unlockCondition: 'Complete 5 lessons across courses',
       isUnlocked: false,
     ),
     Achievement(
       title: 'Master Coder',
       icon: Icons.code_off,
-      iconColor: Color(0xFF6495ED), // Cornflower Blue
+      iconColor: AppColors.Cornflower_Blue,
       unlockCondition: 'Complete all courses',
       isUnlocked: false,
     ),
   ];
 
-  // Animation controllers for card taps (optional, for scale effect)
+  // Animation controllers for card taps
   double _cardScale = 1.0;
 
   // Level dropdown state
@@ -138,9 +138,9 @@ class _LearningScreenState extends State<LearningScreen> {
       _cardScale = 0.95; // Scale down on tap
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Tapped on card! Add navigation details here later.')),
+      const SnackBar(content: Text('Tapped on card! Add navigation details here later.')),
     );
-    Future.delayed(Duration(milliseconds: 150), () {
+    Future.delayed(const Duration(milliseconds: 150), () {
       setState(() {
         _cardScale = 1.0; // Scale back
       });
@@ -181,103 +181,93 @@ class _LearningScreenState extends State<LearningScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Learning',
-          style: TextStyle(color: Color(0xFFFFFFFF)), // White text
-        ),
-        actions: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  Color(0xFF6495ED), // Cornflower Blue
-                  Color(0xFF7851A9), // Royal Purple
-                ],
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: _selectedLevel,
-                icon: Icon(Icons.arrow_drop_down, color: Color(0xFFFFFFFF)),
-                style: TextStyle(color: Color(0xFFFFFFFF)),
-                dropdownColor: Color(0xFF16213E),
-                onChanged: _onLevelChanged,
-                items: _levels.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            ),
+    return Container(
+      decoration: BoxDecoration(gradient: AppGradients.mainBackground),
+      child: Scaffold(
+        extendBodyBehindAppBar: true, // Allow body to extend behind AppBar
+        backgroundColor: Colors.transparent, // Ensure no default background
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: const Text(
+            'Learning',
+            style: TextStyle(color: AppColors.textPrimary),
           ),
-          SizedBox(width: 8.0),
-        ],
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1A252F), // Dark Navy
-              Color(0xFF1C2526), // Yankees Blue
-            ],
-          ),
+          actions: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [AppColors.Cornflower_Blue, AppColors.Royal_Purple],
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedLevel,
+                  icon: const Icon(Icons.arrow_drop_down, color: AppColors.textPrimary),
+                  style: const TextStyle(color: AppColors.textPrimary),
+                  dropdownColor: AppColors.Yankees_Blue,
+                  onChanged: _onLevelChanged,
+                  items: _levels.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8.0),
+          ],
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: ListView(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             children: [
-              Padding(
+              const Padding(
                 padding: EdgeInsets.only(bottom: 8.0),
                 child: Text(
                   'Continue Learning',
                   style: TextStyle(
-                    color: Color(0xFFFFFFFF),
+                    color: AppColors.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               ...courses.map((course) => _buildCourseCard(course)).toList(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Card(
-                color: Color(0xFF16213E),
+                color: AppColors.Yankees_Blue,
                 child: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Learning Paths',
                             style: TextStyle(
-                              color: Color(0xFFFFFFFF),
+                              color: AppColors.textPrimary,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           TextButton(
                             onPressed: _navigateToLearningPaths,
-                            child: Text(
+                            child: const Text(
                               'Explore',
-                              style: TextStyle(color: Color(0xFF6495ED)), // Cornflower Blue
+                              style: TextStyle(color: AppColors.Cornflower_Blue),
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: paths.map((path) => _buildPathCard(path.title, path.lessons, path.iconColor)).toList(),
@@ -286,37 +276,37 @@ class _LearningScreenState extends State<LearningScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Card(
-                color: Color(0xFF16213E),
+                color: AppColors.Yankees_Blue,
                 child: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.check_circle, color: Color(0xFF6495ED), size: 40), // Cornflower Blue
-                          SizedBox(width: 16),
-                          Text(
+                          const Icon(Icons.check_circle, color: AppColors.Cornflower_Blue, size: 40),
+                          const SizedBox(width: 16),
+                          const Text(
                             'Achievements',
                             style: TextStyle(
-                              color: Color(0xFFFFFFFF),
+                              color: AppColors.textPrimary,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           TextButton(
                             onPressed: _navigateToAchievements,
-                            child: Text(
+                            child: const Text(
                               'View All',
-                              style: TextStyle(color: Color(0xFF6495ED)), // Cornflower Blue
+                              style: TextStyle(color: AppColors.Cornflower_Blue),
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       ...achievements.map((achievement) => _buildAchievementCard(achievement)).toList(),
                     ],
                   ),
@@ -325,78 +315,17 @@ class _LearningScreenState extends State<LearningScreen> {
             ],
           ),
         ),
+        // Removed navigation bar as per your setup (handled by WelcomeScreen in other code)
       ),
-
-      //TODO - REMOVED NAV BAR
-      // bottomNavigationBar: BottomNavigationBar(
-      //   backgroundColor: Colors.transparent,
-      //   selectedItemColor: Color(0xFF6495ED), // Cornflower Blue
-      //   unselectedItemColor: Color(0xFFB3FFFFFF), // White at 70% opacity
-      //   showSelectedLabels: false,
-      //   showUnselectedLabels: true,
-      //   items: [
-      //     BottomNavigationBarItem(
-      //       icon: Padding(
-      //         padding: EdgeInsets.only(bottom: 4.0),
-      //         child: Icon(Icons.home, size: 24),
-      //       ),
-      //       label: 'Home',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Padding(
-      //         padding: EdgeInsets.only(bottom: 4.0),
-      //         child: Icon(Icons.build, size: 24),
-      //       ),
-      //       label: 'Tools',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: SizedBox(
-      //         height: 24,
-      //         child: Container(
-      //           decoration: BoxDecoration(
-      //             gradient: LinearGradient(
-      //               begin: Alignment.centerLeft,
-      //               end: Alignment.centerRight,
-      //               colors: [
-      //                 Color(0xFF6495ED), // Cornflower Blue
-      //                 Color(0xFF7851A9), // Royal Purple
-      //               ],
-      //             ),
-      //             shape: BoxShape.circle,
-      //           ),
-      //           padding: EdgeInsets.all(4.0),
-      //           child: Icon(Icons.add, color: Color(0xFFFFFFFF), size: 16),
-      //         ),
-      //       ),
-      //       label: '',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Padding(
-      //         padding: EdgeInsets.only(bottom: 4.0),
-      //         child: Icon(Icons.school, size: 24),
-      //       ),
-      //       label: 'Learning',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Padding(
-      //         padding: EdgeInsets.only(bottom: 4.0),
-      //         child: Icon(Icons.person, size: 24),
-      //       ),
-      //       label: 'Profile',
-      //     ),
-      //   ],
-      //   currentIndex: 2, // Highlight the "add" button
-      //   type: BottomNavigationBarType.fixed,
-      // ),
     );
   }
 
   Widget _buildCourseCard(Course course) {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
       transform: Matrix4.identity()..scale(_cardScale),
       child: Card(
-        color: Color(0xFF16213E),
+        color: AppColors.Yankees_Blue,
         child: InkWell(
           onTap: () => _navigateToCourseDetail(course),
           borderRadius: BorderRadius.circular(8),
@@ -404,17 +333,17 @@ class _LearningScreenState extends State<LearningScreen> {
             leading: Icon(Icons.code, color: course.iconColor, size: 40),
             title: Text(
               course.title,
-              style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 16),
+              style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
             ),
             subtitle: Text(
               course.subtitle,
-              style: TextStyle(color: Color(0xFFB3FFFFFF)),
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
             trailing: Text(
               '${(course.progress * 100).toInt()}% Complete',
-              style: TextStyle(color: Colors.green, fontSize: 14),
+              style: const TextStyle(color: Colors.green, fontSize: 14),
             ),
-            contentPadding: EdgeInsets.all(16.0),
+            contentPadding: const EdgeInsets.all(16.0),
           ),
         ),
       ),
@@ -423,7 +352,7 @@ class _LearningScreenState extends State<LearningScreen> {
 
   Widget _buildPathCard(String title, String lessons, Color color) {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
       transform: Matrix4.identity()..scale(_cardScale),
       child: InkWell(
         onTap: () {
@@ -441,16 +370,16 @@ class _LearningScreenState extends State<LearningScreen> {
         },
         borderRadius: BorderRadius.circular(8),
         child: Card(
-          color: Color(0xFF1A252F), // Dark Navy
+          color: AppColors.cardTop,
           child: Container(
             width: 140,
-            padding: EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               children: [
                 Icon(Icons.star, color: color, size: 40),
-                SizedBox(height: 8),
-                Text(title, style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 16)),
-                Text(lessons, style: TextStyle(color: Color(0xFFB3FFFFFF))),
+                const SizedBox(height: 8),
+                Text(title, style: const TextStyle(color: AppColors.textPrimary, fontSize: 16)),
+                Text(lessons, style: const TextStyle(color: AppColors.textSecondary)),
               ],
             ),
           ),
@@ -461,31 +390,31 @@ class _LearningScreenState extends State<LearningScreen> {
 
   Widget _buildAchievementCard(Achievement achievement) {
     return Padding(
-      padding: EdgeInsets.only(top: 8.0),
+      padding: const EdgeInsets.only(top: 8.0),
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 200),
         transform: Matrix4.identity()..scale(_cardScale),
         child: InkWell(
           onTap: _onCardTap,
           borderRadius: BorderRadius.circular(8),
           child: Card(
-            color: Color(0xFF16213E),
+            color: AppColors.Yankees_Blue,
             child: ListTile(
               leading: Icon(achievement.icon, color: achievement.iconColor, size: 40),
               title: Text(
                 achievement.title,
-                style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 16),
+                style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
               ),
               trailing: achievement.isUnlocked
-                  ? Icon(Icons.check_circle, color: Color(0xFF6495ED), size: 30)
-                  : Icon(Icons.lock, color: Colors.grey, size: 30),
+                  ? const Icon(Icons.check_circle, color: AppColors.Cornflower_Blue, size: 30)
+                  : const Icon(Icons.lock, color: Colors.grey, size: 30),
               subtitle: !achievement.isUnlocked
                   ? Text(
                 'Locked: ${achievement.unlockCondition}',
-                style: TextStyle(color: Color(0xFFB3FFFFFF), fontSize: 12),
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
               )
                   : null,
-              contentPadding: EdgeInsets.all(16.0),
+              contentPadding: const EdgeInsets.all(16.0),
             ),
           ),
         ),
@@ -502,64 +431,55 @@ class CourseDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return Container(
+      decoration: BoxDecoration(gradient: AppGradients.mainBackground),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          course.title,
-          style: TextStyle(color: Color(0xFFFFFFFF)),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFFFFFFFF)),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1A252F), // Dark Navy
-              Color(0xFF1C2526), // Yankees Blue
-            ],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text(
+            course.title,
+            style: const TextStyle(color: AppColors.textPrimary),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Card(
-              color: Color(0xFF16213E),
+              color: AppColors.Yankees_Blue,
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max, // Use full available space
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'Progress: ${(course.progress * 100).toInt()}%',
-                      style: TextStyle(color: Colors.green, fontSize: 16),
+                      style: const TextStyle(color: Colors.green, fontSize: 16),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
                       'Lessons: ${course.subtitle}',
-                      style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 16),
+                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
                     ),
-                    SizedBox(height: 16),
-                    Expanded( // Flexible space for future content
-                      child: Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Accessing ${course.title} content...')),
-                            );
-                          },
-                          child: Text('Start Course'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF6495ED), // Cornflower Blue
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Accessing ${course.title} content...')),
+                          );
+                        },
+                        child: const Text('Start Course'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.Cornflower_Blue,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
                       ),
                     ),
@@ -582,35 +502,28 @@ class LearningPathsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return Container(
+      decoration: BoxDecoration(gradient: AppGradients.mainBackground),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Learning Paths',
-          style: TextStyle(color: Color(0xFFFFFFFF)),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFFFFFFFF)),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1A252F), // Dark Navy
-              Color(0xFF1C2526), // Yankees Blue
-            ],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: const Text(
+            'Learning Paths',
+            style: TextStyle(color: AppColors.textPrimary),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 1.2,
                 crossAxisSpacing: 16,
@@ -620,7 +533,7 @@ class LearningPathsPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final path = paths[index];
                 return Card(
-                  color: Color(0xFF16213E),
+                  color: AppColors.Yankees_Blue,
                   child: InkWell(
                     onTap: () {
                       if (path.title == 'Beginner') {
@@ -637,19 +550,19 @@ class LearningPathsPage extends StatelessWidget {
                     },
                     borderRadius: BorderRadius.circular(8),
                     child: Padding(
-                      padding: EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(16.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.star, color: path.iconColor, size: 40),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             path.title,
-                            style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 16, fontWeight: FontWeight.bold),
+                            style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                           Text(
                             path.lessons,
-                            style: TextStyle(color: Color(0xFFB3FFFFFF)),
+                            style: const TextStyle(color: AppColors.textSecondary),
                           ),
                         ],
                       ),
@@ -677,64 +590,57 @@ class BeginnerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return Container(
+      decoration: BoxDecoration(gradient: AppGradients.mainBackground),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Beginner Path',
-          style: TextStyle(color: Color(0xFFFFFFFF)),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFFFFFFFF)),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1A252F), // Dark Navy
-              Color(0xFF1C2526), // Yankees Blue
-            ],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: const Text(
+            'Beginner Path',
+            style: TextStyle(color: AppColors.textPrimary),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Lessons (5 total)',
-                  style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Expanded(
                   child: ListView.builder(
                     itemCount: lessons.length,
                     itemBuilder: (context, index) {
                       return Card(
-                        color: Color(0xFF16213E),
-                        margin: EdgeInsets.only(bottom: 8.0),
+                        color: AppColors.Yankees_Blue,
+                        margin: const EdgeInsets.only(bottom: 8.0),
                         child: ListTile(
-                          leading: Icon(Icons.play_circle_outline, color: Color(0xFF6495ED), size: 30),
+                          leading: const Icon(Icons.play_circle_outline, color: AppColors.Cornflower_Blue, size: 30),
                           title: Text(
                             lessons[index],
-                            style: TextStyle(color: Color(0xFFFFFFFF)),
+                            style: const TextStyle(color: AppColors.textPrimary),
                           ),
                           trailing: SizedBox(
                             width: 60,
                             child: LinearProgressIndicator(
                               value: (index / lessons.length).toDouble(),
                               backgroundColor: Colors.grey[700],
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6495ED)),
+                              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.Cornflower_Blue),
                               minHeight: 4,
                             ),
                           ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Reduced padding
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Starting lesson: ${lessons[index]}')),
@@ -769,64 +675,57 @@ class IntermediatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return Container(
+      decoration: BoxDecoration(gradient: AppGradients.mainBackground),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Intermediate Path',
-          style: TextStyle(color: Color(0xFFFFFFFF)),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFFFFFFFF)),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1A252F), // Dark Navy
-              Color(0xFF1C2526), // Yankees Blue
-            ],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: const Text(
+            'Intermediate Path',
+            style: TextStyle(color: AppColors.textPrimary),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Lessons (8 total)',
-                  style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Expanded(
                   child: ListView.builder(
                     itemCount: lessons.length,
                     itemBuilder: (context, index) {
                       return Card(
-                        color: Color(0xFF16213E),
-                        margin: EdgeInsets.only(bottom: 8.0),
+                        color: AppColors.Yankees_Blue,
+                        margin: const EdgeInsets.only(bottom: 8.0),
                         child: ListTile(
-                          leading: Icon(Icons.play_circle_outline, color: Color(0xFF7851A9), size: 30),
+                          leading: const Icon(Icons.play_circle_outline, color: AppColors.Royal_Purple, size: 30),
                           title: Text(
                             lessons[index],
-                            style: TextStyle(color: Color(0xFFFFFFFF)),
+                            style: const TextStyle(color: AppColors.textPrimary),
                           ),
                           trailing: SizedBox(
                             width: 60,
                             child: LinearProgressIndicator(
                               value: (index / lessons.length).toDouble(),
                               backgroundColor: Colors.grey[700],
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF7851A9)),
+                              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.Royal_Purple),
                               minHeight: 4,
                             ),
                           ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Reduced padding
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Starting lesson: ${lessons[index]}')),
@@ -854,53 +753,46 @@ class AchievementsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return Container(
+      decoration: BoxDecoration(gradient: AppGradients.mainBackground),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Achievements',
-          style: TextStyle(color: Color(0xFFFFFFFF)),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFFFFFFFF)),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1A252F), // Dark Navy
-              Color(0xFF1C2526), // Yankees Blue
-            ],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: const Text(
+            'Achievements',
+            style: TextStyle(color: AppColors.textPrimary),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: ListView.builder(
               itemCount: achievements.length,
               itemBuilder: (context, index) {
                 final achievement = achievements[index];
                 return Card(
-                  color: Color(0xFF16213E),
-                  margin: EdgeInsets.only(bottom: 8.0),
+                  color: AppColors.Yankees_Blue,
+                  margin: const EdgeInsets.only(bottom: 8.0),
                   child: ListTile(
                     leading: Icon(achievement.icon, color: achievement.iconColor, size: 40),
                     title: Text(
                       achievement.title,
-                      style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 16),
+                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
                     ),
                     trailing: achievement.isUnlocked
-                        ? Icon(Icons.check_circle, color: Color(0xFF6495ED), size: 30)
-                        : Icon(Icons.lock, color: Colors.grey, size: 30),
+                        ? const Icon(Icons.check_circle, color: AppColors.Cornflower_Blue, size: 30)
+                        : const Icon(Icons.lock, color: Colors.grey, size: 30),
                     subtitle: !achievement.isUnlocked
                         ? Text(
                       'Locked: ${achievement.unlockCondition}',
-                      style: TextStyle(color: Color(0xFFB3FFFFFF), fontSize: 12),
+                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
                     )
                         : null,
                     onTap: () {
