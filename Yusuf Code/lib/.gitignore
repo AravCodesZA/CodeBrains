@@ -1,0 +1,9 @@
+# Flutter
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Env files
+.env
+*.env

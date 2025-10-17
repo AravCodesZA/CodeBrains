@@ -1,0 +1,240 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'models/tool_id.dart';
+
+class ApiService {
+  // --------------------------------------------------------------------------
+  // 🌐 API CONFIG
+  // --------------------------------------------------------------------------
+  static const String _url = 'https://api.openai.com/v1/chat/completions';
+  static final List<Map<String, String>> _conversation = [];
+  static final Map<String, List<Map<String, String>>> _savedChats = {};
+
+  // --------------------------------------------------------------------------
+  // 🧠 CURRENT STATE
+  // --------------------------------------------------------------------------
+  static String currentMode = 'General';
+  static String currentDifficulty = 'normal'; // beginner | intermediate | advanced
+  static ToolId currentTool = ToolId.aiCoder;
+
+  static List<String> teachingModes = [
+    'General',
+    'Explain Concepts',
+    'Debug My Code',
+    'Optimize Code',
+    'Teach Me New Skill',
+    'Ask Me Anything',
+  ];
+
+  // --------------------------------------------------------------------------
+  // 💬 CONVERSATION MANAGEMENT
+  // --------------------------------------------------------------------------
+  static List<Map<String, String>> getConversation() => _conversation;
+
+  static Future<void> addUserMessage(String message) async {
+    _conversation.add({"role": "user", "content": message});
+  }
+
+  static Future<void> addAssistantMessage(String message) async {
+    _conversation.add({"role": "assistant", "content": message});
+  }
+
+  static void clearConversation() => _conversation.clear();
+
+  // --------------------------------------------------------------------------
+  // 💾 CHAT SAVE / LOAD
+  // --------------------------------------------------------------------------
+  static void saveCurrentChat(String name) {
+    _savedChats[name] = List<Map<String, String>>.from(_conversation);
+  }
+
+  static void loadChat(String name) {
+    _conversation
+      ..clear()
+      ..addAll(_savedChats[name] ?? []);
+  }
+
+  static List<String> getChatNames() => _savedChats.keys.toList();
+
+  static Future<void> savePreferences() async {
+    // Placeholder for persistence (e.g., SharedPreferences)
+  }
+
+  // --------------------------------------------------------------------------
+  // 🧠 UNIVERSAL MENTOR RULES
+  // --------------------------------------------------------------------------
+  static const String _universalRules = """
+Rules for all responses:
+1. Do not dump full solutions or long code unless explicitly asked.
+2. Provide short snippets or pseudo-code to illustrate points.
+3. Explain *why* a fix or concept works, not just what to type.
+4. When debugging, guide step-by-step — describe reasoning.
+5. Encourage learning with reflective questions (“What do you think this line does?”).
+6. Use a calm, mentoring tone like a senior developer teaching a junior.
+7. Keep explanations clear, structured, and focused on understanding.
+""";
+
+  // --------------------------------------------------------------------------
+  // 🎚️ DIFFICULTY CONTEXT
+  // --------------------------------------------------------------------------
+  static String _generateDifficultyContext(String difficulty) {
+    switch (difficulty.toLowerCase()) {
+      case 'beginner':
+        return """
+Speak simply and use analogies.  
+Provide very short code snippets, and explain concepts like variables, loops, and functions in plain English.  
+Avoid jargon or complex syntax.
+""";
+      case 'intermediate':
+        return """
+Assume the user understands basic syntax.  
+Focus on best practices, design patterns, and debugging logic.  
+Encourage them to reason about efficiency and clarity.
+""";
+      case 'advanced':
+        return """
+Assume the user is an experienced developer.  
+Use technical language where appropriate.  
+Focus on architecture, performance profiling, concurrency, and scalability.  
+Challenge them to think critically and optimize like a senior engineer.
+""";
+      default:
+        return "";
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // 🧩 TOOL-SPECIFIC CONTEXTS
+  // --------------------------------------------------------------------------
+  static String _generateSystemPrompt(ToolId tool, String difficulty) {
+    final diffContext = _generateDifficultyContext(difficulty);
+
+    switch (tool) {
+      case ToolId.aiCoder:
+        return """
+You are CodeBrains — an expert AI coding mentor.  
+Your role is to *teach coding through examples*, not write code for the user.  
+Focus on small examples and reasoning over large solutions.  
+
+$difficulty
+$diffContext
+$_universalRules
+""";
+
+      case ToolId.smartComplete:
+        return """
+You are CodeBrains Smart Complete — a contextual AI that helps users finish incomplete thoughts or snippets.  
+Offer small code completions or logic hints and explain why.  
+
+$difficulty
+$diffContext
+$_universalRules
+""";
+
+      case ToolId.codeOptimizer:
+        return """
+You are CodeBrains Performance Coach.  
+Help users optimize their code for speed, clarity, and scalability.  
+Teach *why* optimization matters with short examples or pseudo-code.  
+
+$difficulty
+$diffContext
+$_universalRules
+""";
+
+      case ToolId.bugFinder:
+        return """
+You are CodeBrains Debug Mentor.  
+Help users debug issues by reasoning step-by-step.  
+Never give full fixed code. Explain what each fix does and why.  
+
+$difficulty
+$diffContext
+$_universalRules
+""";
+
+      case ToolId.performance:
+        return """
+You are CodeBrains Profiler.  
+Teach users how to measure, analyze, and improve code performance.  
+Use clear reasoning, short examples, and concepts like Big-O, caching, or async handling.  
+
+$difficulty
+$diffContext
+$_universalRules
+""";
+
+      case ToolId.codeReview:
+        return """
+You are CodeBrains Reviewer — a senior developer teaching clean and maintainable coding practices.  
+Offer constructive feedback and help the user understand *why* certain changes matter.  
+
+$difficulty
+$diffContext
+$_universalRules
+""";
+
+      default:
+        return """
+You are CodeBrains — an AI mentor for developers.  
+Your purpose is to guide learning, explain reasoning, and provide examples in the correct difficulty level.  
+
+$difficulty
+$diffContext
+$_universalRules
+""";
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // 🚀 SEND MESSAGE
+  // --------------------------------------------------------------------------
+  static Future<String> sendMessage(String userPrompt) async {
+    final apiKey = dotenv.env['OPENAI_API_KEY'] ?? '';
+    if (apiKey.isEmpty) return '⚠️ Missing API key in .env file';
+
+    final systemPrompt = _generateSystemPrompt(currentTool, currentDifficulty);
+
+    final refinedPrompt = """
+$userPrompt
+
+Reminder:
+Act as a mentor. Provide reasoning and insight over full code replacements.
+If you include code, make it short and illustrative.
+""";
+
+    final body = jsonEncode({
+      "model": "gpt-4-turbo",
+      "messages": [
+        {"role": "system", "content": systemPrompt},
+        ..._conversation.map((m) => {"role": m["role"], "content": m["content"]}),
+        {"role": "user", "content": refinedPrompt},
+      ],
+      "temperature": 0.55,
+      "max_tokens": 900,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(_url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $apiKey',
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final reply = data['choices'][0]['message']['content'].trim();
+        _conversation.add({"role": "assistant", "content": reply});
+        return reply;
+      } else {
+        return '⚠️ API error ${response.statusCode}: ${response.body}';
+      }
+    } catch (e) {
+      return '⚠️ Network error: $e';
+    }
+  }
+}

@@ -1,0 +1,281 @@
+import 'package:flutter/material.dart';
+import 'colors.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: ToolsScreen(),
+    );
+  }
+}
+
+class ToolsScreen extends StatelessWidget {
+  const ToolsScreen({super.key});
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFF1A1A2E), // Dark background color
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            // Handle back button press
+          },
+        ),
+        title: Text(
+          'Tools',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Text(
+              '100%',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle('Code Helper', Color(0xFF6495ED)), // Orange icon
+              SizedBox(height: 16),
+              _buildCodeHelperGrid(),
+              SizedBox(height: 32),
+              _buildSectionTitle('CodeDebug & Analysis', Color(0xFF7851A9)), // Royal purple
+              SizedBox(height: 16),
+              _buildCodeDebugGrid(),
+            ],
+          ),
+        ),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Handle floating action button press
+        },
+        backgroundColor: Color(0xFF4A90E2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ), // Blue FAB
+        child: Icon(Icons.add, color: Colors.white, size: 30),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  Widget _buildSectionTitle(String title, Color iconColor) {
+    return Row(
+      children: [
+        Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.2), // Lighter background for the icon container
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Icon(Icons.flash_on, color: iconColor, size: 16), // Placeholder icon
+        ),
+        SizedBox(width: 8),
+        Text(
+          title,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  // Cards and icons ---------------------------------
+  Widget _buildCodeHelperGrid() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildToolCard(
+                icon : Icon(Icons.code, size: 16, color:  Colors.white), // Replace with your actual asset path
+                title: 'AI Coder',
+                status: 'Active',
+                iconBgColor: Color(0xFF6495ED), // Cornflower blue
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: _buildToolCard(
+                icon: Icon(Icons.checklist, size: 16, color:  Colors.white), // Replace with your actual asset path
+                title: 'Smart Complete',
+                status: 'Active',
+                iconBgColor: Color(0xFF6495ED), // Cornflower blue
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 16),
+        _buildToolCard(
+          icon: Icon(Icons.apps, size: 16, color:  Colors.white), // Replace with your actual asset path
+          title: 'Code Optimizer',
+          status: 'Active',
+          iconBgColor: Color(0xFF6495ED), // Cornflower blue
+          isFullWidth: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCodeDebugGrid() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildToolCard(
+                icon:   Icon(Icons.bug_report,  size: 16, color:  Colors.white), // Replace with your actual asset path
+                title: 'Bug Finder',
+                status: 'Active',
+                iconBgColor: Color(0xFF7851A9), // Royal purple
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child : _buildToolCard(
+                icon:   Icon(Icons.add_chart_sharp, size: 16, color:  Colors.white ), // Replace with your actual asset path
+                title: 'Performance',
+                status: 'Active',
+                iconBgColor: Color(0xFF7851A9), // Royal purple
+              ),
+
+            ),
+          ],
+        ),
+        SizedBox(height: 16),
+        _buildToolCard(
+          icon: Icon(Icons.warning, size: 16, color:  Colors.white), // Replace with your actual asset path
+          title: 'Code Review',
+          status: 'Active',
+          iconBgColor: Color(0xFF7851A9), // Royal purple
+          isFullWidth: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildToolCard({
+    required Icon icon,
+    required String title,
+    required String status,
+    required Color iconBgColor,
+    bool isFullWidth = false,
+  }) {
+    return Container(
+      width: isFullWidth ? double.infinity : null,
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Color(0xFF16213E), // Card background color
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: iconBgColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              // Assuming icons are in assets. If not, replace with actual Icons.
+              // child: Image.asset(icon, width: 30, height: 30),
+            ),
+          ),
+          SizedBox(height: 12),
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            status,
+            style: TextStyle(
+              color: Color(0xFF66BB6A), // Green for active status
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  // Navigation bar ------------
+  // Widget _buildBottomNavigationBar() {
+  //   return BottomAppBar(
+  //     color: Color(0xFF1A1A2E), // Darker bottom app bar
+  //     shape: CircularNotchedRectangle(),
+  //     notchMargin: 8.0,
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //       children: [
+  //         _buildBottomNavItem(Icons.home, 'Home', isActive: true),
+  //         _buildBottomNavItem(Icons.build, 'Tools', isActive: true),
+  //         SizedBox(width: 40), // Placeholder for the FAB
+  //         _buildBottomNavItem(Icons.school, 'Learning'),
+  //         _buildBottomNavItem(Icons.person, 'Profile'),
+  //       ],
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildBottomNavItem(IconData icon, String label, {bool isActive = false}) {
+  //   return Column(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [
+  //       IconButton(
+  //         icon: Icon(
+  //           icon,
+  //           color: isActive ? Color(0xFF4A90E2) : Colors.grey, // Blue for active, grey for inactive
+  //         ),
+  //         onPressed: () {
+  //           // Handle navigation
+  //         },
+  //       ),
+  //       Text(
+  //         label,
+  //         style: TextStyle(
+  //           color: isActive ? Color(0xFF4A90E2) : Colors.grey,
+  //           fontSize: 12,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+}
