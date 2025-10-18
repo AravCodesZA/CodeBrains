@@ -1,4 +1,3 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'pages/home_page.dart';
@@ -8,7 +7,6 @@ import 'pages/learning_page.dart';
 import 'pages/profile_page.dart';
 
 Future<void> main() async {
-  // 🧠 Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
   // 🌍 Load environment variables safely
@@ -47,7 +45,7 @@ class CodeBrainsApp extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// 🧭 Main Screen with Bottom Navigation
+// 🧭 Main Screen with Bottom Navigation + Smart Back Navigation Memory
 // -----------------------------------------------------------------------------
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -58,66 +56,108 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+  int _previousIndex = 0; // 🧠 remembers last tab before current
+  late final List<Widget> _pages;
 
-  final List<Widget> _pages = const [
-    HomePage(),
-    ToolsPage(),
-    ChatScreen(),
-    LearningPage(),
-    ProfilePage(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const HomePage(),
+      ToolsPage(
+        onGoToChat: () {
+          setState(() {
+            _previousIndex = _currentIndex;
+            _currentIndex = 2; // 🔁 go to Chat tab
+          });
+        },
+      ),
+      ChatScreen(
+        onBackToTools: () {
+          setState(() {
+            _previousIndex = _currentIndex;
+            _currentIndex = 1; // 🔁 go back to Tools tab
+          });
+        },
+      ),
+      const LearningPage(),
+      const ProfilePage(),
+    ];
+  }
 
   void _onTabTapped(int index) {
     setState(() {
+      _previousIndex = _currentIndex;
       _currentIndex = index;
     });
   }
 
+  Future<bool> _onWillPop() async {
+    // 🔙 If user presses phone’s back button, go to previous tab instead of closing app
+    if (_currentIndex != _previousIndex) {
+      setState(() {
+        final temp = _currentIndex;
+        _currentIndex = _previousIndex;
+        _previousIndex = temp;
+      });
+      return false; // Don’t exit the app
+    }
+    return true; // Exit app if already on the same tab
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0E1020),
-      body: _pages[_currentIndex],
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: const Color(0xFF0E1020),
+        body: _pages[_currentIndex],
 
-      // 🟣 Centered Floating Button
-      floatingActionButton: MediaQuery.of(context).viewInsets.bottom == 0
-          ? FloatingActionButton(
-        backgroundColor: Colors.white,
-        elevation: 6,
-        shape: const CircleBorder(),
-        onPressed: () {
-          setState(() => _currentIndex = 2);
-        },
-        child: const Icon(Icons.add, color: Color(0xFF0E1020), size: 26),
-      )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        // 🟣 Center Floating Button (opens Chat)
+        floatingActionButton: MediaQuery.of(context).viewInsets.bottom == 0
+            ? FloatingActionButton(
+          backgroundColor: Colors.white,
+          elevation: 6,
+          shape: const CircleBorder(),
+          onPressed: () {
+            setState(() {
+              _previousIndex = _currentIndex;
+              _currentIndex = 2; // Chat tab
+            });
+          },
+          child:
+          const Icon(Icons.add, color: Color(0xFF0E1020), size: 26),
+        )
+            : null,
+        floatingActionButtonLocation:
+        FloatingActionButtonLocation.centerDocked,
 
-      // 🟦 Custom Bottom Nav Bar
-      bottomNavigationBar: BottomAppBar(
-        color: const Color(0xFF1A1D2E),
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // LEFT SIDE (Home + Tools)
-              Row(
-                children: [
-                  _navItem(Icons.home, "Home", 0),
-                  _navItem(Icons.build, "Tools", 1),
-                ],
-              ),
-              // RIGHT SIDE (Learning + Profile)
-              Row(
-                children: [
-                  _navItem(Icons.school, "Learning", 3),
-                  _navItem(Icons.person, "Profile", 4),
-                ],
-              ),
-            ],
+        // 🟦 Custom Bottom Navigation Bar
+        bottomNavigationBar: BottomAppBar(
+          color: const Color(0xFF1A1D2E),
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 8,
+          child: SizedBox(
+            height: 60,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // LEFT SIDE (Home + Tools)
+                Row(
+                  children: [
+                    _navItem(Icons.home, "Home", 0),
+                    _navItem(Icons.build, "Tools", 1),
+                  ],
+                ),
+                // RIGHT SIDE (Learning + Profile)
+                Row(
+                  children: [
+                    _navItem(Icons.school, "Learning", 3),
+                    _navItem(Icons.person, "Profile", 4),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

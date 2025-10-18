@@ -3,7 +3,9 @@ import '../api_service.dart';
 import '../widgets/message_bubble.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final VoidCallback? onBackToTools; // ✅ callback to go back to Tools tab
+
+  const ChatScreen({Key? key, this.onBackToTools}) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -72,7 +74,8 @@ class _ChatScreenState extends State<ChatScreen> {
   // 🧠 HEADER SECTION
   // -------------------------------------------------
   Widget _buildHeader() {
-    final activeTool = ApiService.currentTool.name.replaceAll('_', ' ').toUpperCase();
+    final activeTool =
+    ApiService.currentTool.name.replaceAll('_', ' ').toUpperCase();
     final diff = ApiService.currentDifficulty;
 
     return Container(
@@ -85,8 +88,16 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       child: Row(
         children: [
-          _iconBtn(Icons.arrow_back_ios_new, onTap: () => Navigator.pop(context)),
-          const SizedBox(width: 10),
+          _iconBtn(
+            Icons.arrow_back_ios_new,
+            onTap: () {
+              // ✅ Instead of popping route, trigger callback to Tools tab
+              if (widget.onBackToTools != null) {
+                widget.onBackToTools!();
+              }
+            },
+          ),
+          const SizedBox(width: 8),
           Container(
             width: 40,
             height: 40,
@@ -108,12 +119,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 Text(
                   "CodeBrains • ${activeTool.replaceAll('_', ' ')}",
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 Text(
                   "Difficulty: ${diff[0].toUpperCase()}${diff.substring(1)}",
-                  style:
-                  const TextStyle(fontSize: 12, color: Color(0xFF4ECDC4)),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF4ECDC4),
+                  ),
                 ),
               ],
             ),
@@ -174,9 +189,10 @@ class _ChatScreenState extends State<ChatScreen> {
               backgroundColor: Colors.white.withOpacity(0.08),
               shape: StadiumBorder(
                 side: BorderSide(
-                    color: isActive
-                        ? const Color(0xFF667EEA)
-                        : Colors.white.withOpacity(0.2)),
+                  color: isActive
+                      ? const Color(0xFF667EEA)
+                      : Colors.white.withOpacity(0.2),
+                ),
               ),
             ),
           );
@@ -186,7 +202,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   // -------------------------------------------------
-  // 💬 MESSAGE SENDING SECTION
+  // 💬 INPUT + SENDING
   // -------------------------------------------------
   Widget _inputArea() {
     final canSend = _input.text.trim().isNotEmpty && !_sending;
@@ -227,7 +243,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _input.clear();
     _scrollToEndSoon();
 
-    final reply = await ApiService.sendMessage(text.trim());
+    await ApiService.sendMessage(text.trim());
     setState(() => _sending = false);
     _scrollToEndSoon();
   }
@@ -245,8 +261,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   // -------------------------------------------------
-// ✨ QUICK SUGGESTION CHIPS (insert into input)
-// -------------------------------------------------
+  // 💡 Quick Suggestion Chips
+  // -------------------------------------------------
   Widget _quickSuggestions() {
     final chips = [
       'Debug my code',
@@ -271,12 +287,10 @@ class _ChatScreenState extends State<ChatScreen> {
               side: BorderSide(color: Colors.white.withOpacity(0.2)),
             ),
             onPressed: () {
-              // Instead of sending, insert text into input box
               setState(() {
                 if (_input.text.isEmpty) {
                   _input.text = text;
                 } else {
-                  // Add at cursor or append nicely
                   _input.text = "${_input.text.trim()} $text";
                 }
                 _input.selection = TextSelection.fromPosition(
@@ -293,7 +307,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   // -------------------------------------------------
-  // ⏳ TYPING INDICATOR
+  // ⏳ Typing Indicator
   // -------------------------------------------------
   Widget _typingIndicator() {
     return Align(
@@ -327,15 +341,14 @@ class _ChatScreenState extends State<ChatScreen> {
       curve: Curves.easeInOut,
       builder: (_, v, __) => Opacity(
         opacity: v,
-        child:
-        const CircleAvatar(radius: 3, backgroundColor: Color(0xFF667EEA)),
+        child: const CircleAvatar(radius: 3, backgroundColor: Color(0xFF667EEA)),
       ),
       onEnd: () => setState(() {}),
     );
   }
 
   // -------------------------------------------------
-  // ⚙️ SETTINGS PANEL (Save / Load / Clear)
+  // ⚙️ Settings Panel
   // -------------------------------------------------
   void _openSettingsPanel() {
     showModalBottomSheet(
@@ -387,7 +400,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Color(0xFF667EEA)),
+                      borderSide:
+                      const BorderSide(color: Color(0xFF667EEA)),
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
@@ -408,8 +422,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       final name = chats[i];
                       return ListTile(
                         title: Text(name,
-                            style:
-                            const TextStyle(color: Colors.white)),
+                            style: const TextStyle(color: Colors.white)),
                         trailing: const Icon(
                             Icons.arrow_forward_ios_rounded,
                             size: 16,

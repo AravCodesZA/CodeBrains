@@ -4,7 +4,9 @@ import '../models/tool_id.dart';
 import 'chat_screen.dart';
 
 class ToolsPage extends StatefulWidget {
-  const ToolsPage({super.key});
+  final VoidCallback? onGoToChat; // 👈 callback to switch tab to Chat
+
+  const ToolsPage({Key? key, this.onGoToChat}) : super(key: key);
 
   @override
   State<ToolsPage> createState() => _ToolsPageState();
@@ -53,11 +55,11 @@ class _ToolsPageState extends State<ToolsPage> {
         icon: Icons.reviews),
   ];
 
+  // When a tool is selected
   void _onToolSelect(ToolId id) async {
     setState(() => _selectedTool = id);
     ApiService.currentTool = id;
 
-    // Highlight selection with a snackbar
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text("${id.name.replaceAll('_', ' ').toUpperCase()} selected"),
       duration: const Duration(milliseconds: 800),
@@ -66,7 +68,12 @@ class _ToolsPageState extends State<ToolsPage> {
     ));
 
     await Future.delayed(const Duration(milliseconds: 300));
-    if (mounted) {
+
+    // 👇 Instead of Navigator.push, we use the callback to go to Chat tab
+    if (widget.onGoToChat != null) {
+      widget.onGoToChat!();
+    } else {
+      // fallback for direct use (e.g., testing standalone)
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const ChatScreen()),
@@ -96,9 +103,12 @@ class _ToolsPageState extends State<ToolsPage> {
         elevation: 0,
         title: const Text('CodeBrains Tools'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () {
-            Navigator.pop(context);
+            // 🔁 Go to Chat tab instead of Navigator.pop
+            if (widget.onGoToChat != null) {
+              widget.onGoToChat!();
+            }
           },
         ),
       ),
@@ -121,6 +131,7 @@ class _ToolsPageState extends State<ToolsPage> {
     );
   }
 
+  // Section header
   Widget _sectionHeader(String title) {
     return Row(
       children: [
@@ -133,6 +144,7 @@ class _ToolsPageState extends State<ToolsPage> {
     );
   }
 
+  // Grid of tool cards
   Widget _grid(List<_ToolCardData> items) {
     return Wrap(
       spacing: 16,
@@ -147,9 +159,7 @@ class _ToolsPageState extends State<ToolsPage> {
     );
   }
 
-  // ---------------------------------------------------
-  // 🎚️ Difficulty Selector (Connected to ApiService)
-  // ---------------------------------------------------
+  // 🎚️ Difficulty Selector (linked to ApiService)
   Widget _difficultySelector() {
     final options = ['Beginner', 'Intermediate', 'Advanced'];
     return Container(
@@ -171,7 +181,8 @@ class _ToolsPageState extends State<ToolsPage> {
           Wrap(
             spacing: 10,
             children: options.map((diff) {
-              final active = _selectedDifficulty.toLowerCase() == diff.toLowerCase();
+              final active =
+                  _selectedDifficulty.toLowerCase() == diff.toLowerCase();
               return ChoiceChip(
                 label: Text(diff,
                     style: TextStyle(
@@ -231,8 +242,8 @@ class _ToolCardState extends State<_ToolCard>
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
     _scale = Tween<double>(begin: 1.0, end: 0.95).animate(_controller);
   }
 
