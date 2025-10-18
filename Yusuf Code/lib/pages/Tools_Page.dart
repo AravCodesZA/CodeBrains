@@ -69,7 +69,7 @@ class _ToolsPageState extends State<ToolsPage> {
 
     await Future.delayed(const Duration(milliseconds: 300));
 
-    // 👇 Instead of Navigator.push, we use the callback to go to Chat tab
+    // 👇 Push Back Button To Chat
     if (widget.onGoToChat != null) {
       widget.onGoToChat!();
     } else {
